@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Youtube, Copy, RefreshCw, Hash, FileText, Image } from "lucide-react";
+import { ArrowLeft, Copy, RefreshCw, Hash, FileText, Image } from "lucide-react";
 
 export default function SEOToolkitPage() {
   const router = useRouter();
@@ -86,8 +86,7 @@ export default function SEOToolkitPage() {
           Dashboard
         </button>
         <h1 className="text-xl font-extrabold flex items-center gap-2">
-          <Youtube size={24} />
-          SEO Toolkit
+          ▶️ SEO Toolkit
         </h1>
         <div className="w-20" />
       </div>
@@ -96,7 +95,7 @@ export default function SEOToolkitPage() {
 
         {/* Header */}
         <div className="bg-gradient-to-r from-red-600 to-pink-600 rounded-2xl p-5 mb-6 text-center shadow-xl">
-          <Youtube size={40} className="mx-auto mb-2" />
+          <p className="text-5xl mb-2">▶️</p>
           <h2 className="text-xl font-extrabold mb-1">YouTube SEO Toolkit</h2>
           <p className="text-red-200 text-sm">AI দিয়ে Title, Description, Tags তৈরি করুন</p>
         </div>
@@ -149,8 +148,7 @@ export default function SEOToolkitPage() {
             </>
           ) : (
             <>
-              <Youtube size={22} />
-              SEO Data তৈরি করুন
+              ▶️ SEO Data তৈরি করুন
             </>
           )}
         </button>
