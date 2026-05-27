@@ -27,6 +27,25 @@ export default function GeneratePage() {
   const [progress, setProgress] = useState(0);
   const [step, setStep] = useState("");
   const [error, setError] = useState("");
+  const [enhancing, setEnhancing] = useState(false);
+
+  const handleEnhance = async () => {
+    if (!script.trim()) return;
+    setEnhancing(true);
+    try {
+      const res = await fetch("/api/enhance-script", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ script, language, style }),
+      });
+      const data = await res.json();
+      if (data.enhanced) setScript(data.enhanced);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setEnhancing(false);
+    }
+  };
 
   const handleGenerate = async () => {
     if (!script.trim()) {
@@ -37,7 +56,6 @@ export default function GeneratePage() {
       setError("লগইন করুন!");
       return;
     }
-
     setGenerating(true);
     setProgress(0);
     setError("");
@@ -61,20 +79,19 @@ export default function GeneratePage() {
       await addDoc(collection(db, "videos"), {
         userId: auth.currentUser.uid,
         userEmail: auth.currentUser.email,
-        script: script,
-        style: style,
-        duration: duration,
-        ratio: ratio,
-        language: language,
-        camera: camera,
-        mood: mood,
-        voiceGender: voiceGender,
+        script,
+        style,
+        duration,
+        ratio,
+        language,
+        camera,
+        mood,
+        voiceGender,
         status: "সম্পন্ন",
         createdAt: serverTimestamp(),
         thumbnail: "🎬",
         title: script.substring(0, 30) + "...",
       });
-
       setGenerating(false);
       router.push("/my-videos");
     } catch (err) {
@@ -135,6 +152,20 @@ export default function GeneratePage() {
             className="w-full bg-gray-700 text-white px-4 py-3 rounded-xl border-2 border-gray-600 focus:border-indigo-500 outline-none transition resize-none h-36 text-sm"
           />
           <p className="text-gray-500 text-xs mt-2">{script.length} অক্ষর</p>
+          <button
+            onClick={handleEnhance}
+            disabled={enhancing || !script.trim()}
+            className="w-full mt-3 bg-purple-600 hover:bg-purple-700 text-white py-2.5 rounded-xl font-bold transition flex justify-center items-center gap-2 disabled:opacity-60"
+          >
+            {enhancing ? (
+              <>
+                <Loader2 size={18} className="animate-spin" />
+                AI উন্নত করছে...
+              </>
+            ) : (
+              "✨ AI দিয়ে স্ক্রিপ্ট উন্নত করুন"
+            )}
+          </button>
         </div>
 
         {/* Style */}
