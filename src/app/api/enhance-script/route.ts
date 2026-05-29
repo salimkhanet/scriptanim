@@ -38,16 +38,16 @@ export async function POST(req: NextRequest) {
     if (data.error) {
       console.error("Gemini error:", data.error);
       return NextResponse.json({
-        enhanced: script + "\n\n✨ [AI দ্বারা উন্নত করা হয়েছে]"
-      });
+        enhanced: script + "\n\n✨ [AIzaSyCw8eUD83kkDQZhbWAkbegi4lajEdG9i0U]"
+  });
     }
 
     const enhanced = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!enhanced) {
       return NextResponse.json({
-        enhanced: script + "\n\n✨ [AI দ্বারা উন্নত করা হয়েছে]"
-      });
+        enhanced: script + "\n\n✨ [AIzaSyCw8eUD83kkDQZhbWAkbegi4lajEdG9i0U]"
+  });
     }
 
     return NextResponse.json({ enhanced });
