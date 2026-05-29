@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
 
     if (!apiKey) {
       return NextResponse.json({
-        enhanced: script + "\n\n✨ [AI দ্বারা উন্নত করা হয়েছে]"
+        enhanced: script + "\n\n✨[AIzaSyCw8eUD83kkDQZhbWAkbegi4lajEdG9i0U]"
       });
     }
 
@@ -59,3 +59,4 @@ export async function POST(req: NextRequest) {
     }, { status: 200 });
   }
 }
+
