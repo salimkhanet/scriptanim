@@ -1,12 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { auth } from "@/firebase/config";
+import { onAuthStateChanged } from "firebase/auth";
 import {
-  ArrowLeft, Users, Video, CreditCard, Flag,
+  Users, Video, CreditCard, Flag,
   TrendingUp, Shield, Trash2, Ban, Check,
   Search, Bell, Settings, BarChart3
 } from "lucide-react";
+
+const ADMIN_UID = "8dbptOnkz6SE3zm6EBP1T07Hq832";
 
 const stats = [
   { label: "মোট User", value: "12,450", icon: <Users size={24} />, color: "bg-indigo-600", change: "+12%" },
@@ -37,6 +41,22 @@ export default function AdminPage() {
   const [search, setSearch] = useState("");
   const [users, setUsers] = useState(recentUsers);
   const [reports, setReports] = useState(reportedContent);
+  const [authorized, setAuthorized] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push("/login");
+      } else if (user.uid !== ADMIN_UID) {
+        router.push("/dashboard");
+      } else {
+        setAuthorized(true);
+      }
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, [router]);
 
   const handleBan = (id: number) => {
     setUsers(users.map((u) =>
@@ -53,6 +73,26 @@ export default function AdminPage() {
     u.email.toLowerCase().includes(search.toLowerCase())
   );
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <p className="text-white text-2xl animate-pulse">লোড হচ্ছে...</p>
+      </div>
+    );
+  }
+
+  if (!authorized) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-6xl mb-4">🚫</p>
+          <p className="text-white text-2xl font-bold">অনুমতি নেই!</p>
+          <p className="text-gray-400 mt-2">আপনি Admin নন।</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-950 text-white">
 
@@ -62,8 +102,7 @@ export default function AdminPage() {
           onClick={() => router.push("/dashboard")}
           className="flex items-center gap-2 hover:text-yellow-300 transition font-semibold"
         >
-          <ArrowLeft size={22} />
-          Dashboard
+          ← Dashboard
         </button>
         <h1 className="text-xl font-extrabold">🛡️ Admin Panel</h1>
         <div className="flex items-center gap-3">
@@ -72,7 +111,7 @@ export default function AdminPage() {
         </div>
       </div>
 
-      <div className="p-4 max-w-md mx-auto">
+      <div className="p-4 max-w-md mx-auto pb-24">
 
         {/* Tabs */}
         <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-hide">
@@ -81,9 +120,7 @@ export default function AdminPage() {
               key={i}
               onClick={() => setActiveTab(i)}
               className={`px-4 py-2 rounded-xl font-bold text-sm flex-shrink-0 transition ${
-                activeTab === i
-                  ? "bg-red-600 text-white"
-                  : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                activeTab === i ? "bg-red-600 text-white" : "bg-gray-800 text-gray-300 hover:bg-gray-700"
               }`}
             >
               {tab}
@@ -94,15 +131,12 @@ export default function AdminPage() {
         {/* Overview Tab */}
         {activeTab === 0 && (
           <div>
-            {/* Stats Grid */}
             <div className="grid grid-cols-2 gap-4 mb-6">
               {stats.map((stat, i) => (
                 <div key={i} className={`${stat.color} rounded-2xl p-4 shadow-lg`}>
                   <div className="flex justify-between items-start mb-2">
                     {stat.icon}
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                      stat.change.startsWith("+") ? "bg-white/20 text-white" : "bg-black/20 text-white"
-                    }`}>
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-white/20 text-white">
                       {stat.change}
                     </span>
                   </div>
@@ -112,7 +146,6 @@ export default function AdminPage() {
               ))}
             </div>
 
-            {/* Quick Actions */}
             <h3 className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-3">⚡ Quick Actions</h3>
             <div className="grid grid-cols-2 gap-3 mb-6">
               {[
@@ -132,7 +165,6 @@ export default function AdminPage() {
               ))}
             </div>
 
-            {/* Recent Activity */}
             <h3 className="text-gray-400 text-xs font-bold uppercase tracking-wider mb-3">🕐 সাম্প্রতিক কার্যক্রম</h3>
             <div className="bg-gray-800 rounded-2xl p-4 space-y-3">
               {[
@@ -166,7 +198,6 @@ export default function AdminPage() {
                 className="w-full bg-gray-800 text-white pl-10 pr-4 py-3 rounded-xl border-2 border-gray-700 focus:border-red-500 outline-none transition"
               />
             </div>
-
             <div className="space-y-3">
               {filtered.map((user) => (
                 <div key={user.id} className="bg-gray-800 rounded-2xl p-4 border border-gray-700">
@@ -178,14 +209,12 @@ export default function AdminPage() {
                       <p className="font-bold text-sm">{user.name}</p>
                       <p className="text-gray-400 text-xs">{user.email}</p>
                     </div>
-                    <div className="text-right">
-                      <span className={`text-xs px-2 py-1 rounded-full font-bold ${
-                        user.plan === "Master" ? "bg-purple-600" :
-                        user.plan === "Pro" ? "bg-indigo-600" : "bg-gray-600"
-                      }`}>
-                        {user.plan}
-                      </span>
-                    </div>
+                    <span className={`text-xs px-2 py-1 rounded-full font-bold ${
+                      user.plan === "Master" ? "bg-purple-600" :
+                      user.plan === "Pro" ? "bg-indigo-600" : "bg-gray-600"
+                    }`}>
+                      {user.plan}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -197,9 +226,7 @@ export default function AdminPage() {
                       <button
                         onClick={() => handleBan(user.id)}
                         className={`flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold transition ${
-                          user.status === "banned"
-                            ? "bg-green-600 hover:bg-green-700"
-                            : "bg-red-600 hover:bg-red-700"
+                          user.status === "banned" ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700"
                         }`}
                       >
                         {user.status === "banned" ? <Check size={14} /> : <Ban size={14} />}
@@ -269,7 +296,6 @@ export default function AdminPage() {
               <p className="text-4xl font-extrabold">৳1,24,500</p>
               <p className="text-green-200 text-sm mt-1">↑ গত মাসের চেয়ে ২৩% বেশি</p>
             </div>
-
             <div className="grid grid-cols-2 gap-4 mb-4">
               {[
                 { label: "Free Users", value: "8,234", color: "text-gray-400" },
@@ -283,7 +309,6 @@ export default function AdminPage() {
                 </div>
               ))}
             </div>
-
             <div className="bg-gray-800 rounded-2xl p-4">
               <h3 className="font-bold mb-3 text-gray-200">📈 সাম্প্রতিক লেনদেন</h3>
               <div className="space-y-3">
