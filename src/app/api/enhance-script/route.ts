@@ -3,17 +3,20 @@ export const maxDuration = 30;
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
+  let script = "";   // এটা আগে ডিক্লেয়ার করা হলো
+
   try {
-    const { script } = await req.json();
+    const body = await req.json();
+    script = body.script || "";
 
     if (!script) {
-      return NextResponse.json({ enhanced: script || "" });
+      return NextResponse.json({ enhanced: "" });
     }
 
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
-      console.error("GEMINI_API_KEY not found");
+      console.error("GEMINI_API_KEY not found in environment variables");
       return NextResponse.json({ enhanced: script });
     }
 
@@ -40,23 +43,21 @@ export async function POST(req: NextRequest) {
     });
 
     if (!res.ok) {
-      throw new Error(`API Error: ${res.status}`);
+      throw new Error(`API responded with status ${res.status}`);
     }
 
     const data = await res.json();
     const enhanced = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
 
-    if (!enhanced) {
-      return NextResponse.json({ enhanced: script });
-    }
-
-    return NextResponse.json({ enhanced });
+    return NextResponse.json({ 
+      enhanced: enhanced || script 
+    });
 
   } catch (error) {
     console.error("Enhance Script Error:", error);
     return NextResponse.json({ 
       enhanced: script,
-      error: "স্ক্রিপ্ট এনহ্যান্স করতে সমস্যা হয়েছে"
+      error: "স্ক্রিপ্ট এনহ্যান্স করতে সমস্যা হয়েছে" 
     });
   }
 }
