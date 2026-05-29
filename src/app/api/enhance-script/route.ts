@@ -1,8 +1,10 @@
 export const maxDuration = 30;
 import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
+  let script = "";
   try {
-    const { script } = await req.json();
+    const body = await req.json();
+    script = body.script || "";
     const key = process.env.HF_API_KEY;
     if (!key) {
       return NextResponse.json({ enhanced: script });
@@ -27,3 +29,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ enhanced: script });
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
