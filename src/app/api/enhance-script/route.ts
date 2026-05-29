@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
     if (data.error) {
       console.error("Gemini error:", data.error);
       return NextResponse.json({
-        enhanced: script + "\n\n✨ [AI দ্বারা উন্নত করা হয়েছে]"
+        enhanced: script + "\n\n✨ [main]"
       });
     }
 
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
 
     if (!enhanced) {
       return NextResponse.json({
-        enhanced: script + "\n\n✨ [AI দ্বারা উন্নত করা হয়েছে]"
+        enhanced: script + "\n\n✨ [27ddaecuse gemini 1.5 flash]"
       });
     }
 
