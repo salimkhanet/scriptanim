@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
     if (data.error) {
       console.error("Gemini error:", data.error);
       return NextResponse.json({
-        enhanced: script + "\n\n✨ [AIzaSyCw8eUD83kkDQZhbWAkbegi4lajEdG9i0U]"
+        enhanced: script + "\n\n✨ [use gemini 1.5 flash]"
   });
     }
 
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
 
     if (!enhanced) {
       return NextResponse.json({
-        enhanced: script + "\n\n✨ [AIzaSyCw8eUD83kkDQZhbWAkbegi4lajEdG9i0U]"
+        enhanced: script + "\n\n✨ [use gemini flash model]"
   });
     }
 
