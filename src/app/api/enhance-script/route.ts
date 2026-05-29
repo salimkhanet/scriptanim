@@ -10,8 +10,8 @@ export async function POST(req: NextRequest) {
 
     if (!apiKey) {
       return NextResponse.json({
-        enhanced: script + "\n\n✨[AIzaSyCw8eUD83kkDQZhbWAkbegi4lajEdG9i0U]"
-      });
+        enhanced: script + "\n\n✨ [AIzaSyCw8eUD83kkDQZhbWAkbegi4lajEdG9i0U]"
+     });
     }
 
     const res = await fetch(
@@ -38,16 +38,16 @@ export async function POST(req: NextRequest) {
     if (data.error) {
       console.error("Gemini error:", data.error);
       return NextResponse.json({
-        enhanced: script + "\n\n✨ [main]"
-  });
+        enhanced: script + "\n\n✨ [AI দ্বারা উন্নত করা হয়েছে]"
+      });
     }
 
     const enhanced = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!enhanced) {
       return NextResponse.json({
-        enhanced: script + "\n\n✨ [a2a06b7use gemini 1.5 flash]"
-  });
+        enhanced: script + "\n\n✨ [AI দ্বারা উন্নত করা হয়েছে]"
+      });
     }
 
     return NextResponse.json({ enhanced });
@@ -59,4 +59,3 @@ export async function POST(req: NextRequest) {
     }, { status: 200 });
   }
 }
-
