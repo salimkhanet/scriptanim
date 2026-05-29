@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
     if (data.error) {
       console.error("Gemini error:", data.error);
       return NextResponse.json({
-        enhanced: script + "\n\n✨ [তুমি একজন পেশাদার ভিডিও স্ক্রিপ্ট রাইটার। বাংলায় সুন্দর, আকর্ষণীয় এবং ছোট ভিডিওর জন্য উপযোগী স্ক্রিপ্ট লিখবে]"
+        enhanced: script + "\n\n✨ [main]"
   });
     }
 
@@ -46,7 +46,8 @@ export async function POST(req: NextRequest) {
 
     if (!enhanced) {
       return NextResponse.json({
-        enhanced: script + "\n\n✨ [স্ক্রিপ্ট জেনারেট করতে সমস্যা হয়েছে]"
+        enhanced: script + "\n\n✨ [a2a06b7
+use gemini 1.5 flash]"
   });
     }
 
