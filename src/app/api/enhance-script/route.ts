@@ -46,8 +46,7 @@ export async function POST(req: NextRequest) {
 
     if (!enhanced) {
       return NextResponse.json({
-        enhanced: script + "\n\n✨ [a2a06b7
-use gemini 1.5 flash]"
+        enhanced: script + "\n\n✨ [a2a06b7use gemini 1.5 flash]"
   });
     }
 
