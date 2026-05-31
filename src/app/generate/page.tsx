@@ -62,9 +62,9 @@ export default function GeneratePage() {
 
     const steps = [
       "স্ক্রিপ্ট বিশ্লেষণ করা হচ্ছে...",
-      "দৃশ্য তৈরি করা হচ্ছে...",
-      "চরিত্র রেন্ডার করা হচ্ছে...",
+      "Avatar তৈরি করা হচ্ছে...",
       "ভয়েসওভার যোগ করা হচ্ছে...",
+      "ভিডিও রেন্ডার হচ্ছে...",
       "মিউজিক যোগ করা হচ্ছে...",
       "ভিডিও এক্সপোর্ট হচ্ছে...",
     ];
@@ -76,6 +76,15 @@ export default function GeneratePage() {
     }
 
     try {
+      const videoRes = await fetch("/api/generate-video", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ script, voiceGender }),
+      });
+      const videoData = await videoRes.json();
+      const videoId = videoData.videoId || "";
+      const videoUrl = videoData.videoUrl || "";
+
       await addDoc(collection(db, "videos"), {
         userId: auth.currentUser.uid,
         userEmail: auth.currentUser.email,
@@ -87,11 +96,14 @@ export default function GeneratePage() {
         camera,
         mood,
         voiceGender,
-        status: "সম্পন্ন",
+        status: videoId ? "প্রসেসিং" : "সম্পন্ন",
+        videoId,
+        videoUrl,
         createdAt: serverTimestamp(),
         thumbnail: "🎬",
         title: script.substring(0, 30) + "...",
       });
+
       setGenerating(false);
       router.push("/my-videos");
     } catch (err) {
@@ -103,7 +115,6 @@ export default function GeneratePage() {
   return (
     <div className="min-h-screen bg-gray-950 text-white">
 
-      {/* Navbar */}
       <div className="bg-indigo-700 px-6 py-4 flex justify-between items-center shadow-lg">
         <button
           onClick={() => router.push("/dashboard")}
@@ -118,7 +129,6 @@ export default function GeneratePage() {
 
       <div className="p-6 max-w-md mx-auto">
 
-        {/* Generating Overlay */}
         {generating && (
           <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-6">
             <div className="bg-gray-800 rounded-3xl p-8 w-full max-w-sm text-center shadow-2xl">
@@ -142,7 +152,6 @@ export default function GeneratePage() {
           </div>
         )}
 
-        {/* Script Input */}
         <div className="bg-gray-800 rounded-2xl p-5 mb-4">
           <h3 className="font-bold text-gray-200 mb-3">📝 স্ক্রিপ্ট লিখুন</h3>
           <textarea
@@ -168,7 +177,6 @@ export default function GeneratePage() {
           </button>
         </div>
 
-        {/* Style */}
         <div className="bg-gray-800 rounded-2xl p-5 mb-4">
           <h3 className="font-bold text-gray-200 mb-3">🎨 ভিডিও স্টাইল</h3>
           <div className="flex gap-2 flex-wrap">
@@ -184,7 +192,6 @@ export default function GeneratePage() {
           </div>
         </div>
 
-        {/* Duration & Ratio */}
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div className="bg-gray-800 rounded-2xl p-5">
             <h3 className="font-bold text-gray-200 mb-3">⏱ দৈর্ঘ্য</h3>
@@ -216,7 +223,6 @@ export default function GeneratePage() {
           </div>
         </div>
 
-        {/* Voice */}
         <div className="bg-gray-800 rounded-2xl p-5 mb-4">
           <h3 className="font-bold text-gray-200 mb-3">🎙 ভয়েসওভার</h3>
           <div className="grid grid-cols-2 gap-4">
@@ -251,7 +257,6 @@ export default function GeneratePage() {
           </div>
         </div>
 
-        {/* Camera */}
         <div className="bg-gray-800 rounded-2xl p-5 mb-4">
           <h3 className="font-bold text-gray-200 mb-3">🎥 ক্যামেরা মুভমেন্ট</h3>
           <div className="flex gap-2 flex-wrap">
@@ -267,7 +272,6 @@ export default function GeneratePage() {
           </div>
         </div>
 
-        {/* Mood */}
         <div className="bg-gray-800 rounded-2xl p-5 mb-6">
           <h3 className="font-bold text-gray-200 mb-3">🎵 ব্যাকগ্রাউন্ড মিউজিক</h3>
           <div className="flex gap-2 flex-wrap">
@@ -283,7 +287,6 @@ export default function GeneratePage() {
           </div>
         </div>
 
-        {/* Generate Button */}
         <button
           onClick={handleGenerate}
           disabled={generating}
